@@ -12,14 +12,14 @@ models:
       out_channels_list: [32, 64, 128, 256]
       kernel_size_list: [3, 3, 3, 3]
     parameter_search:
-      dropout_rate: [0.7, 0.5, 0.3]
+      dropout_rate: [0.5, 0.4, 0.3]
       # dropconnect: []
       
 training:
   epochs: 3
   eval_interval: 5
   cross_validation:
-    n_splits: 5
+    n_splits: 4
     shuffle: True
   early_stopping:
     patience: 10

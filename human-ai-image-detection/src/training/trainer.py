@@ -15,7 +15,7 @@ class ModelTrainer:
         self.config = config
         self.model_factory = model_factory
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.criterion = nn.lo()
+        self.criterion = nn.BCELoss()
         self.history = {'train_loss': [], 'val_loss': [], 'train_acc': [], 'val_acc': []}
         mlflow.set_tracking_uri('file:./experiments/mlruns')
 
@@ -117,51 +117,93 @@ class ModelTrainer:
         return best_val_acc
     
 
-    def train_and_tune(self, train_dataset):
-        mlflow.set_experiment("model_tuning")
-        
-        best_params = None
-        best_score = float('-inf')
-        
-        for model_name in self.config['model_names']:
-            print(f'Training {model_name}')
-            combined_param = {
-                **self.config['hyperparameter_search'], 
-                **self.config['models'][model_name]['parameter_search']
-                }
-            model_hyperparams = self.config['models'][model_name]['parameter_search'].keys()
-            param_grid = ParameterGrid(combined_param)
-            for params in param_grid:
-                print(f'Hyperparameters: {params}')
-                with mlflow.start_run():
-                    mlflow.log_params(params)
-                    
-                    # Choose the model and its parameters from config
-                    model_params = {
-                        **self.config['models'][model_name]['base_params'], 
-                    }
-                    
-                    # Passing the model hyperparameters to model factory for instantiating the model
-                    for param in params:
-                        if param in model_hyperparams:
-                            model_params[param] = params[param]
+    def train_and_tune(self, train_dataset, hyperparameter_tuning: bool = False):
+            """
+            Train and tune the model.
 
+            :param train_dataset: The training dataset
+            :param hyperparameter_tuning: Boolean flag to enable/disable hyperparameter tuning
+            :return: Best hyperparameters and corresponding score if tuning is enabled, else None
+            """
+            mlflow.set_experiment("model_tuning")
+            
+            best_params = None
+            best_score = float('-inf')
+            
+            if hyperparameter_tuning:
+                # Perform hyperparameter tuning
+                for model_name in self.config['model_names']:
+                    print(f'Training {model_name}')
+                    combined_param = {
+                        **self.config['hyperparameter_search'], 
+                        **self.config['models'][model_name]['parameter_search']
+                    }
+                    model_hyperparams = self.config['models'][model_name]['parameter_search'].keys()
+                    param_grid = ParameterGrid(combined_param)
+                    
+                    for params in param_grid:
+                        print(f'Hyperparameters: {params}')
+                        with mlflow.start_run():
+                            mlflow.log_params(params)
+                            
+                            # Choose the model and its parameters from config
+                            model_params = {
+                                **self.config['models'][model_name]['base_params'], 
+                            }
+                            
+                            # Passing the model hyperparameters to model factory for instantiating the model
+                            for param in params:
+                                if param in model_hyperparams:
+                                    model_params[param] = params[param]
+
+                            # Create and train the model
+                            model = self.model_factory.get_model(
+                                model_name,
+                                **model_params
+                            ).to(self.device)
+
+                            # Restore batch_size for cross-validation
+                            score = self._cross_validate(model, train_dataset, params)
+                            
+                            if score > best_score:
+                                best_score = score
+                                best_params = params
+                                best_model = model
+                            
+                            mlflow.log_metric("cv_score", score)
+                
+            else:
+                # Hyperparameter tuning is disabled, train the model with default config
+                print("Skipping hyperparameter tuning and using default parameters.")
+
+                for model_name in self.config['model_names']:
+                    print(f'Training {model_name} with default parameters')
+                    model_hyperparams = self.config['models'][model_name]['parameter_search'].keys()
+                    hyperparams = {
+                    **{key: val[0] for key, val in self.config['hyperparameter_search'].items()},
+                    **{k: v[0] for k, v in self.config['models'][model_name]['parameter_search'].items()}
+                }
+                    
+                    model_params = self.config['models'][model_name]['base_params']
+
+                    for param in hyperparams:
+                        if param in model_hyperparams:
+                            model_params[param] = hyperparams[param]
+                    
                     # Create and train the model
                     model = self.model_factory.get_model(
                         model_name,
                         **model_params
                     ).to(self.device)
 
-                    # Restore batch_size for cross-validation
-                    score = self._cross_validate(model, train_dataset, params)
+                    score = self._cross_validate(model, train_dataset, hyperparams)
                     
                     if score > best_score:
                         best_score = score
-                        best_params = params
-                        
-                    mlflow.log_metric("cv_score", score)
+                        best_params = model_params
+                        best_model = model
 
-        return best_params, best_score
+            return best_params, best_score, best_model
     
     def imshow(self, img):
         img = img / 2 + 0.5     # unnormalize

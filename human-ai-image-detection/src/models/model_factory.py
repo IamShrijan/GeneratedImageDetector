@@ -4,8 +4,8 @@ class ModelFactory:
     @staticmethod
     def get_model(model_name: str, **kwargs):
         models = {
-            # 'deep_cnn': DeepCNN,
-            'random_forest'
+            'deep_cnn': DeepCNN,
+            # 'random_forest'
         }
         
         if model_name not in models:
