@@ -176,3 +176,6 @@ cython_debug/
 
 # dataset
 human-ai-image-detection/dataset
+
+# models
+human-ai-image-detection/trained_models/*

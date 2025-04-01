@@ -3,7 +3,9 @@ hyperparameter_search:
   learning_rate: [0.001, 0.01, 0.1]
   batch_size: [32, 64, 128]
 
-model_names: ['deep_cnn']
+model_names: 
+  # - 'deep_cnn'
+  - 'hybrid_classifier'
 
 models:
   deep_cnn:
@@ -14,12 +16,16 @@ models:
     parameter_search:
       dropout_rate: [0.5, 0.4, 0.3]
       # dropconnect: []
+
+  hybrid_classifier: 
+    base_params:
+    parameter_search:
       
 training:
   epochs: 3
   eval_interval: 5
   cross_validation:
-    n_splits: 4
+    n_splits: 3
     shuffle: True
   early_stopping:
     patience: 10
@@ -28,6 +34,7 @@ training:
     name: "adam"
     params:
       weight_decay: 0.01
+  classification_threshold: 0.5
 
 dataset:
   train_path: "dataset/train_data"
