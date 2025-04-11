@@ -9,6 +9,35 @@ import torchvision
 from tqdm import tqdm
 from src.models.model_factory import ModelFactory
 import torch.nn as nn
+import random
+import torch
+from torchvision import transforms, datasets
+import matplotlib.pyplot as plt
+import torchvision.utils as vutils
+import pandas as pd
+from torch.utils.data import Dataset
+from torchvision.io import read_image
+from torchvision.transforms import Compose
+import torch
+
+class TestImageCSVLoader(Dataset):
+    def __init__(self, csv_file, transform=None):
+        self.data = pd.read_csv(csv_file)
+        self.transform = transform
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, idx):
+        img_path = self.data.iloc[idx]['id']  # 'id' column has the image path
+        img_path = f'dataset/{img_path}'
+        image = read_image(img_path).float() / 255.0  # Normalize to [0, 1]
+
+        if self.transform:
+            image = self.transform(image)
+
+        return image, img_path  # Return image path so you can display it if needed
+
 
 class ModelTrainer:
     def __init__(self, config, model_factory: ModelFactory):
@@ -326,3 +355,41 @@ class ModelTrainer:
                 model.load_state_dict(best_state_dict)
                 
             return model
+    
+    @staticmethod
+    def test_random(model_path: str, model: nn.Module, num_images: int = 5, csv_path: str = "test.csv"):
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+        checkpoint = torch.load(model_path, map_location=device)
+        model.load_state_dict(checkpoint['model_state_dict'])
+        model.to(device)
+        model.eval()
+
+        transform = transforms.Compose([
+            transforms.Resize((128, 128)),
+            transforms.Normalize(mean=[0.5, 0.5, 0.5],
+                                std=[0.5, 0.5, 0.5])
+        ])
+
+        dataset = TestImageCSVLoader(csv_path, transform=transform)
+        indices = random.sample(range(len(dataset)), num_images)
+        sample_subset = torch.utils.data.Subset(dataset, indices)
+        loader = torch.utils.data.DataLoader(sample_subset, batch_size=num_images, shuffle=False)
+
+        images, paths = next(iter(loader))
+        images = images.to(device)
+
+        with torch.no_grad():
+            outputs = model(images)
+            preds = (outputs >= 0.5).float().squeeze().cpu().numpy()
+
+        plt.figure(figsize=(15, 5))
+        for i in range(num_images):
+            img = images[i].cpu().numpy().transpose((1, 2, 0)) * 0.5 + 0.5  # Unnormalize
+            plt.subplot(1, num_images, i + 1)
+            plt.imshow(img)
+            plt.title(f"Pred: {'AI' if preds[i] else 'Real'}")
+            plt.axis('off')
+
+        plt.tight_layout()
+        plt.show()
