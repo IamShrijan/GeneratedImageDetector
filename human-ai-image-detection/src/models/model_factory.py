@@ -1,5 +1,6 @@
 from .architectures.cnn_models import DeepCNN
 from .architectures.hybrid import HybridClassifier
+from .architectures.resNet import ModifiedResNet
 
 class ModelFactory:
     @staticmethod
@@ -7,7 +8,8 @@ class ModelFactory:
         models = {
             # 'deep_cnn': DeepCNN,
             # 'random_forest'
-            'hybrid_classifier': HybridClassifier
+            'hybrid_classifier': HybridClassifier,
+            'resnet': ModifiedResNet,
         }
         
         if model_name not in models:

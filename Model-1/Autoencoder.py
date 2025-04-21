@@ -9,16 +9,16 @@ class CNNAutoencoderWithDropout(nn.Module):
         self.encoder = nn.Sequential(
             nn.Conv2d(3, 32, kernel_size=4, stride=2, padding=1),  # Output: (32, 384, 256)
             nn.ReLU(),
-            nn.Dropout(dropout_rate),
+            nn.MaxPool2d(kernel_size=2, stride=2),  # Output: (32, 192, 128)
             nn.Conv2d(32, 64, kernel_size=4, stride=2, padding=1),  # Output: (64, 192, 128)
             nn.ReLU(),
-            nn.Dropout(dropout_rate),
+            nn.MaxPool2d(kernel_size=2, stride=2),  # Output: (32, 192, 128),
             nn.Conv2d(64, 128, kernel_size=4, stride=2, padding=1),  # Output: (128, 96, 64)
             nn.ReLU(),
-            nn.Dropout(dropout_rate),
+            nn.MaxPool2d(kernel_size=2, stride=2),  # Output: (32, 192, 128),
             nn.Conv2d(128, 256, kernel_size=4, stride=2, padding=1),  # Output: (256, 48, 32)
             nn.ReLU(),
-            nn.Dropout(dropout_rate)
+            nn.MaxPool2d(kernel_size=2, stride=2),  # Output: (32, 192, 128),
         )
         
         # Decoder
