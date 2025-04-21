@@ -388,7 +388,7 @@ class ModelTrainer:
             img = images[i].cpu().numpy().transpose((1, 2, 0)) * 0.5 + 0.5  # Unnormalize
             plt.subplot(1, num_images, i + 1)
             plt.imshow(img)
-            plt.title(f"Pred: {'AI' if preds[i] else 'Real'}")
+            plt.title(f"Pred: {'AI' if preds[i] else 'Human'}")
             plt.axis('off')
 
         plt.tight_layout()

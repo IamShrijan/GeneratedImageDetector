@@ -22,10 +22,10 @@ models:
     parameter_search:
       
 training:
-  epochs: 3
+  epochs: 10
   eval_interval: 5
   cross_validation:
-    n_splits: 3
+    n_splits: 5
     shuffle: True
   early_stopping:
     patience: 10
