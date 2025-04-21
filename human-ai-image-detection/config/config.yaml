@@ -5,7 +5,8 @@ hyperparameter_search:
 
 model_names: 
   # - 'deep_cnn'
-  - 'hybrid_classifier'
+  # - 'hybrid_classifier'
+  - 'resnet'
 
 models:
   deep_cnn:
@@ -19,6 +20,10 @@ models:
 
   hybrid_classifier: 
     base_params:
+    parameter_search:
+  resnet:
+    base_params:
+      num_classes: 1
     parameter_search:
       
 training:
