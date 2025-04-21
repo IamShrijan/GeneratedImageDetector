@@ -1,0 +1,44 @@
+# Configuration for model selection and hyperparameter tuning
+hyperparameter_search:
+  learning_rate: [0.001, 0.01, 0.1]
+  batch_size: [32, 64, 128]
+
+model_names: 
+  # - 'deep_cnn'
+  - 'hybrid_classifier'
+
+models:
+  deep_cnn:
+    base_params:
+      in_channels_list: [3, 32, 64, 128]
+      out_channels_list: [32, 64, 128, 256]
+      kernel_size_list: [3, 3, 3, 3]
+    parameter_search:
+      dropout_rate: [0.5, 0.4, 0.3]
+      # dropconnect: []
+
+  hybrid_classifier: 
+    base_params:
+    parameter_search:
+      
+training:
+  epochs: 10
+  eval_interval: 5
+  cross_validation:
+    n_splits: 5
+    shuffle: True
+  early_stopping:
+    patience: 10
+    min_delta: 0.001
+  optimizer:
+    name: "adam"
+    params:
+      weight_decay: 0.01
+  classification_threshold: 0.5
+
+dataset:
+  train_path: "dataset/train_data"
+  test_path: "dataset/test_data_v2"
+  train_csv: "dataset/train.csv"
+  test_csv: "dataset/test.csv"
+  test_split: 0.3
