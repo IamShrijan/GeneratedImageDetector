@@ -12,4 +12,5 @@ class ModifiedResNet(nn.Module):
 
     def forward(self, x):
         x = self.resnet(x)
+        x = torch.sigmoid(x)
         return x

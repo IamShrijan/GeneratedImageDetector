@@ -8,7 +8,7 @@ class ModelFactory:
         models = {
             # 'deep_cnn': DeepCNN,
             # 'random_forest'
-            'hybrid_classifier': HybridClassifier,
+            # 'hybrid_classifier': HybridClassifier,
             'resnet': ModifiedResNet,
         }
         
