@@ -6,7 +6,6 @@ hyperparameter_search:
 model_names: 
   # - 'deep_cnn'
   - 'hybrid_classifier'
-  # - 'xgboost'
 
 models:
   deep_cnn:
@@ -24,6 +23,10 @@ models:
 
   xg_boost: 
     base_params:
+    parameter_search:
+  resnet:
+    base_params:
+      num_classes: 1
     parameter_search:
       
 training:
