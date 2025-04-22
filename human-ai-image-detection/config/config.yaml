@@ -6,6 +6,7 @@ hyperparameter_search:
 model_names: 
   # - 'deep_cnn'
   - 'hybrid_classifier'
+  # - 'xgboost'
 
 models:
   deep_cnn:
@@ -18,6 +19,10 @@ models:
       # dropconnect: []
 
   hybrid_classifier: 
+    base_params:
+    parameter_search:
+
+  xg_boost: 
     base_params:
     parameter_search:
       
