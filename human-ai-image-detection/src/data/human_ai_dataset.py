@@ -7,7 +7,9 @@ from torchvision.io import read_image
 from torch.utils.data import Dataset
 import env as env
 from PIL import Image
-
+import kagglehub
+import shutil
+import os
 
 # Reference article: https://pytorch.org/tutorials/beginner/basics/data_tutorial.html
 
@@ -18,6 +20,11 @@ class HumanVSAIDataset(Dataset):
         self.transform = transform
         self.target_transform = target_transform
         self.img_labels = pd.read_csv(annotations_file_path)
+        target_path = env.DATASET_DIR
+        if os.path.exists(target_path):
+            print(f"Dataset already exists at: {target_path}")
+        else:
+            self.load_dataset()
 
     def __len__(self):
         return len(self.img_labels)
@@ -41,6 +48,26 @@ class HumanVSAIDataset(Dataset):
             label = self.target_transform(label)
         return image, label
     
+    def load_dataset(self):
+        print("Downloading dataset...")
+        download_path = kagglehub.dataset_download("alessandrasala79/ai-vs-human-generated-dataset")
+        print("Downloaded to:", download_path)
+
+        target_path = os.path.join("dataset")
+
+        # Step 3: Create the directory if it doesn't exist
+        os.makedirs(target_path, exist_ok=True)
+
+        for item in os.listdir(download_path):
+            source = os.path.join(download_path, item)
+            destination = os.path.join(target_path, item)
+            if os.path.isdir(source):
+                shutil.copytree(source, destination, dirs_exist_ok=True)
+            else:
+                shutil.copy2(source, destination)
+
+        print(f"Dataset moved to: {target_path}")
+
 
     def get_dataset(self, subset_size = None) -> Dict[str, List]:
         """Parses and returns the dataset as a `Dict`"""

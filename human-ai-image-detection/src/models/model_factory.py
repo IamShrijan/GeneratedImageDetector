@@ -7,7 +7,6 @@ class ModelFactory:
     def get_model(model_name: str, **kwargs):
         models = {
             # 'deep_cnn': DeepCNN,
-            # 'random_forest'
             # 'hybrid_classifier': HybridClassifier,
             'resnet': ModifiedResNet,
         }
