@@ -369,7 +369,7 @@ class ModelTrainer:
         print(f"Model saved to {save_path}")
     
     @staticmethod
-    def test_random(model_path: str, model: nn.Module, num_images: int = 5, csv_path: str = "test.csv"):
+    def test_random(model_path: str, model: nn.Module, num_images: int = 5, csv_path: str = "test.csv", img_dim=128):
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         checkpoint = torch.load(model_path, map_location=device)
@@ -386,8 +386,8 @@ class ModelTrainer:
 
         transform = transforms.Compose([
             transforms.Lambda(lambda x: x.expand(3, -1, -1)),
-            # Random crop and resize the image to 128x128
-            transforms.RandomResizedCrop(128, scale=(0.8, 1.0)),  # Random crop with scaling
+            # NOTE: For ViT ensure image dimensions are 224
+            transforms.RandomResizedCrop(img_dim, scale=(0.8, 1.0)),  # Random crop with scaling
             transforms.RandomHorizontalFlip(),  # Random horizontal flip
             transforms.RandomRotation(30),  # Random rotation within a range of -30 to +30 degrees
             transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.2),  # Random color adjustments
