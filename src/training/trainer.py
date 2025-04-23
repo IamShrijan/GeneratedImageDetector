@@ -263,6 +263,7 @@ class ModelTrainer:
                     best_score = score
                     best_params = model_params
                     best_model = model
+                    self._save_model(best_params,best_score,best_model,model_name=model_name)
 
         return best_params, best_score, best_model
 
@@ -357,6 +358,17 @@ class ModelTrainer:
             return model
     
     @staticmethod
+    def _save_model(params, score, model, model_name: str = 'best_model'):
+        save_path = f'trained_models/{model_name}.pt'
+        torch.save({
+            'model_state_dict': model.state_dict(),
+            'params': params,
+            'score': score
+        }, save_path)
+
+        print(f"Model saved to {save_path}")
+    
+    @staticmethod
     def test_random(model_path: str, model: nn.Module, num_images: int = 5, csv_path: str = "test.csv"):
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -365,10 +377,22 @@ class ModelTrainer:
         model.to(device)
         model.eval()
 
+        # transform = transforms.Compose([
+        # transforms.Lambda(lambda x: x.expand(3, -1, -1)),
+        #     transforms.Resize((128, 128)),
+        #     transforms.Normalize(mean=[0.5, 0.5, 0.5],
+        #                         std=[0.5, 0.5, 0.5])
+        # ])
+
         transform = transforms.Compose([
-            transforms.Resize((128, 128)),
-            transforms.Normalize(mean=[0.5, 0.5, 0.5],
-                                std=[0.5, 0.5, 0.5])
+            transforms.Lambda(lambda x: x.expand(3, -1, -1)),
+            # Random crop and resize the image to 128x128
+            transforms.RandomResizedCrop(128, scale=(0.8, 1.0)),  # Random crop with scaling
+            transforms.RandomHorizontalFlip(),  # Random horizontal flip
+            transforms.RandomRotation(30),  # Random rotation within a range of -30 to +30 degrees
+            transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.2),  # Random color adjustments
+            # transforms.ToTensor(),  # Convert image to tensor
+            transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])  # Normalize image to [-1, 1]
         ])
 
         dataset = TestImageCSVLoader(csv_path, transform=transform)

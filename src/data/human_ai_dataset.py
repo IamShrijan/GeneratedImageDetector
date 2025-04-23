@@ -19,12 +19,13 @@ class HumanVSAIDataset(Dataset):
         self.img_dir = env.DATASET_DIR
         self.transform = transform
         self.target_transform = target_transform
-        self.img_labels = pd.read_csv(annotations_file_path)
         target_path = env.DATASET_DIR
-        if os.path.exists(target_path):
+        if os.path.exists(target_path) and os.listdir(target_path):
             print(f"Dataset already exists at: {target_path}")
         else:
             self.load_dataset()
+
+        self.img_labels = pd.read_csv(annotations_file_path)
 
     def __len__(self):
         return len(self.img_labels)
