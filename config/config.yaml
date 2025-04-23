@@ -4,8 +4,10 @@ hyperparameter_search:
   batch_size: [32, 64, 128]
 
 model_names: 
-  # - 'deep_cnn'
+  - 'deep_cnn'
   - 'hybrid_classifier'
+  - 'resnet'
+  - 'vit'
 
 models:
   deep_cnn:
@@ -21,10 +23,12 @@ models:
     base_params:
     parameter_search:
 
-  xg_boost: 
+  resNet:
     base_params:
+      num_classes: 1
     parameter_search:
-  resnet:
+
+  vit:
     base_params:
       num_classes: 1
     parameter_search:

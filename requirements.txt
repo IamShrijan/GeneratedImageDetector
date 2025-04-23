@@ -1,0 +1,13 @@
+kagglehub==0.3.11
+matplotlib==3.10.1
+mlflow==2.20.3
+mlflow_skinny==2.20.3
+numpy==2.2.5
+opencv_python==4.11.0.86
+pandas==2.2.3
+Pillow==11.2.1
+seaborn
+scikit_learn==1.6.1
+torch==2.4.1
+torchvision==0.19.1
+tqdm==4.66.6

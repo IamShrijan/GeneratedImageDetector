@@ -175,7 +175,10 @@ cython_debug/
 .pypirc
 
 # dataset
-human-ai-image-detection/dataset
+dataset/*
 
 # models
-human-ai-image-detection/trained_models/*
+trained_models/*
+
+# mlruns
+mlruns
