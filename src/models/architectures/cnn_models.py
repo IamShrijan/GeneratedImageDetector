@@ -1,5 +1,4 @@
 import torch.nn as nn
-from ..base_model import BaseModel
 import torch
 
 # Inspired from https://futurescienceleaders.com/blog/2024/06/differentiating-ai-vs-human-art-a-convolutional-neural-network-approach/#:~:text=It%20uses%20Convolutional%20Neural%20Networks,and%20decreasing%20loss%20over%20iterations.
