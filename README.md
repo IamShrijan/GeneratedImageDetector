@@ -63,7 +63,7 @@ Download and extract the dataset into the `dataset/` folder.
 ## How to Run the Project
 1. **Load Trained Models** 
 
-   Load all the trained models to avoid training the models from scratch. The models can be found [here ADD LINK](). 
+   Load all the trained models to avoid training the models from scratch. The models can be found [here](https://northeastern-my.sharepoint.com/:f:/g/personal/jaganathan_p_northeastern_edu/EhL73m0rR2xAuAaTNZi_s_gBAb0AqWR9d8RerZlQXGljuQ?e=gVnYcM). 
 
    Download all the models and load them into `trained_models/` strictly for smooth functioning.
    
