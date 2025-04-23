@@ -179,6 +179,7 @@ dataset/*
 
 # models
 trained_models/*
+!trained_models/.gitkeep
 
 # mlruns
 mlruns
